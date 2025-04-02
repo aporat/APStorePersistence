@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/bizz84/SwiftyStoreKit.git", from: "0.16.4"),
-        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", .branch("master"))
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess", branch: "master")
 
     ],
     targets: [
