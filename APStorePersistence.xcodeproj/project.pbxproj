@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 90;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -33,16 +33,20 @@
 /* Begin PBXFrameworksBuildPhase section */
 		537EDD0124F49F1E003DC54A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				772BDA562DA061100095D5C5 /* KeychainAccess in Frameworks */,
 				772BDA592DA061240095D5C5 /* SwiftyStoreKit in Frameworks */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		537EDD0A24F49F1E003DC54A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				537EDD0E24F49F1E003DC54A /* APStorePersistence.framework in Frameworks */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -78,8 +82,10 @@
 /* Begin PBXHeadersBuildPhase section */
 		537EDCFF24F49F1E003DC54A /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
@@ -94,6 +100,8 @@
 				537EDD0224F49F1E003DC54A /* Resources */,
 			);
 			buildRules = (
+			);
+			dependencies = (
 			);
 			name = APStorePersistence;
 			packageProductDependencies = (
@@ -118,6 +126,8 @@
 				537EDD1024F49F1E003DC54A /* PBXTargetDependency */,
 			);
 			name = APStorePersistenceTests;
+			packageProductDependencies = (
+			);
 			productName = ProgressToolbarTests;
 			productReference = 537EDD0D24F49F1E003DC54A /* APStorePersistenceTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -155,7 +165,7 @@
 				772BDA542DA061100095D5C5 /* XCRemoteSwiftPackageReference "KeychainAccess" */,
 				772BDA572DA061240095D5C5 /* XCRemoteSwiftPackageReference "SwiftyStoreKit" */,
 			);
-			preferredProjectObjectVersion = 90;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 537EDD0524F49F1E003DC54A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -169,27 +179,35 @@
 /* Begin PBXResourcesBuildPhase section */
 		537EDD0224F49F1E003DC54A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		537EDD0B24F49F1E003DC54A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		537EDD0024F49F1E003DC54A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 				770E13AA2DA05FD9005FCBE1 /* StorePersistence.swift in Sources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		537EDD0924F49F1E003DC54A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -202,7 +220,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		537EDD1624F49F1E003DC54A /* Debug configuration for PBXProject "APStorePersistence" */ = {
+		537EDD1624F49F1E003DC54A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -268,7 +286,7 @@
 			};
 			name = Debug;
 		};
-		537EDD1724F49F1E003DC54A /* Release configuration for PBXProject "APStorePersistence" */ = {
+		537EDD1724F49F1E003DC54A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -328,7 +346,7 @@
 			};
 			name = Release;
 		};
-		537EDD1924F49F1E003DC54A /* Debug configuration for PBXNativeTarget "APStorePersistence" */ = {
+		537EDD1924F49F1E003DC54A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -357,7 +375,7 @@
 			};
 			name = Debug;
 		};
-		537EDD1A24F49F1E003DC54A /* Release configuration for PBXNativeTarget "APStorePersistence" */ = {
+		537EDD1A24F49F1E003DC54A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -385,7 +403,7 @@
 			};
 			name = Release;
 		};
-		537EDD1C24F49F1E003DC54A /* Debug configuration for PBXNativeTarget "APStorePersistenceTests" */ = {
+		537EDD1C24F49F1E003DC54A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -404,7 +422,7 @@
 			};
 			name = Debug;
 		};
-		537EDD1D24F49F1E003DC54A /* Release configuration for PBXNativeTarget "APStorePersistenceTests" */ = {
+		537EDD1D24F49F1E003DC54A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
@@ -428,25 +446,28 @@
 		537EDCFE24F49F1E003DC54A /* Build configuration list for PBXProject "APStorePersistence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				537EDD1624F49F1E003DC54A /* Debug configuration for PBXProject "APStorePersistence" */,
-				537EDD1724F49F1E003DC54A /* Release configuration for PBXProject "APStorePersistence" */,
+				537EDD1624F49F1E003DC54A /* Debug */,
+				537EDD1724F49F1E003DC54A /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		537EDD1824F49F1E003DC54A /* Build configuration list for PBXNativeTarget "APStorePersistence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				537EDD1924F49F1E003DC54A /* Debug configuration for PBXNativeTarget "APStorePersistence" */,
-				537EDD1A24F49F1E003DC54A /* Release configuration for PBXNativeTarget "APStorePersistence" */,
+				537EDD1924F49F1E003DC54A /* Debug */,
+				537EDD1A24F49F1E003DC54A /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		537EDD1B24F49F1E003DC54A /* Build configuration list for PBXNativeTarget "APStorePersistenceTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				537EDD1C24F49F1E003DC54A /* Debug configuration for PBXNativeTarget "APStorePersistenceTests" */,
-				537EDD1D24F49F1E003DC54A /* Release configuration for PBXNativeTarget "APStorePersistenceTests" */,
+				537EDD1C24F49F1E003DC54A /* Debug */,
+				537EDD1D24F49F1E003DC54A /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
