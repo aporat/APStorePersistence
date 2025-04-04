@@ -1,7 +1,8 @@
-import KeychainAccess
 import StoreKit
+import KeychainAccess
 import SwiftyStoreKit
 
+@MainActor
 public final class StorePersistence {
     public static let shared = StorePersistence()
     
