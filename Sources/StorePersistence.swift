@@ -1,3 +1,4 @@
+import Foundation
 import StoreKit
 import KeychainAccess
 import SwiftyStoreKit
@@ -5,112 +6,99 @@ import SwiftyStoreKit
 @MainActor
 public final class StorePersistence {
     public static let shared = StorePersistence()
-    
+
     public var isSubscriptionActive = false
     private var transactions: [String]?
-    
+
+    // MARK: - Constants
+    private enum Const {
+        static let keychainService = "StorePersistence"
+        static let transactionsKey = "transactions"
+    }
+
     private lazy var keychain: Keychain = {
-        Keychain(service: "StorePersistence").accessibility(.afterFirstUnlock)
+        Keychain(service: Const.keychainService).accessibility(.afterFirstUnlock)
     }()
-    
+
+    // MARK: - Transactions (Keychain)
+
     private func loadTransactions() {
-        if let data = try? keychain.getData("transactions"),
-           let json = try? JSONSerialization.jsonObject(with: data, options: []),
-           let transactions = json as? [String]
-        {
-            self.transactions = transactions
-        } else {
-            removeTransactions()
+        guard
+            let data = try? keychain.getData(Const.transactionsKey),
+            let json = try? JSONSerialization.jsonObject(with: data, options: []),
+            let arr = json as? [String]
+        else {
+            // No stored data yet; keep an empty in-memory cache without writing.
+            transactions = []
+            return
         }
+        transactions = arr
     }
-    
+
     public func saveTransactions() {
-        if let currentTransactions = transactions {
-            let jsonData = try? JSONSerialization.data(withJSONObject: currentTransactions, options: [])
-            
-            if let currentJsonData = jsonData {
-                try? keychain.set(currentJsonData, key: "transactions")
-            }
+        guard let current = transactions else { return }
+        if let data = try? JSONSerialization.data(withJSONObject: current, options: []) {
+            try? keychain.set(data, key: Const.transactionsKey)
         }
     }
-    
+
     public func removeTransactions() {
-        try? keychain.remove("transactions")
-        transactions = [String]()
+        try? keychain.remove(Const.transactionsKey)
+        transactions = []
     }
-    
+
     public func saveProduct(_ productId: String) {
-        if transactions == nil {
-            transactions = [String]()
+        if transactions == nil { loadTransactions() }
+        // Avoid duplicates
+        if transactions?.contains(productId) != true {
+            transactions?.append(productId)
+            saveTransactions()
         }
-        
-        transactions?.append(productId)
-        saveTransactions()
     }
-    
+
     public func isPurchasedProduct(of identifier: String) -> Bool {
-        if transactions == nil {
-            loadTransactions()
-        }
-        
-        if let currentTransactions = transactions, currentTransactions.contains(identifier) {
-            return true
-        }
-        
-        return false
+        if transactions == nil { loadTransactions() }
+        return transactions?.contains(identifier) == true
     }
-    
-    // MARK: - StoreKit
-    
+
+    // MARK: - StoreKit (cached products)
+
     private(set) var products: [String: SKProduct] = [:]
-    
+
     private func addProduct(_ product: SKProduct) {
         products[product.productIdentifier] = product
     }
-    
+
     private func allProductsMatching(_ productIds: Set<String>) -> Set<SKProduct> {
-        if products.count == 0 {
-            return Set()
-        }
-        
-        return Set(productIds.compactMap { self.products[$0] })
+        guard !products.isEmpty else { return [] }
+        return Set(productIds.compactMap { products[$0] })
     }
-    
-    public func retrieveProductInfo(_ productId: String, completion: @escaping (_ retrievedProduct: SKProduct?) -> Void) {
-        if productId.isEmpty {
-            completion(nil)
+
+    public func retrieveProductInfo(
+        _ productId: String,
+        completion: @escaping (_ retrievedProduct: SKProduct?) -> Void
+    ) {
+        guard !productId.isEmpty else { completion(nil); return }
+        retrieveProductsInfo([productId]) { completion($0.first) }
+    }
+
+    public func retrieveProductsInfo(
+        _ productIds: Set<String>,
+        completion: @escaping (_ retrievedProducts: Set<SKProduct>) -> Void
+    ) {
+        guard !productIds.isEmpty else { completion([]); return }
+
+        let cached = allProductsMatching(productIds)
+        guard cached.count != productIds.count else {
+            completion(cached)
             return
         }
-        
-        var productIds = Set<String>()
-        productIds.insert(productId)
-        
-        retrieveProductsInfo(productIds) { retrievedProducts in
-            completion(retrievedProducts.first)
-        }
-    }
-    
-    public func retrieveProductsInfo(_ productIds: Set<String>, completion: @escaping (_ retrievedProducts: Set<SKProduct>) -> Void) {
-        if productIds.count == 0 {
-            completion(Set())
-            return
-        }
-        
-        let products = allProductsMatching(productIds)
-        
-        guard products.count == productIds.count else {
-            SwiftyStoreKit.retrieveProductsInfo(productIds) { [weak self] result in
-                
-                for product in result.retrievedProducts {
-                    self?.addProduct(product)
-                }
-                
-                completion(result.retrievedProducts)
+
+        SwiftyStoreKit.retrieveProductsInfo(productIds) { [weak self] result in
+            for product in result.retrievedProducts {
+                self?.addProduct(product)
             }
-            
-            return
+            completion(result.retrievedProducts)
         }
-        
-        completion(products)
     }
 }
