@@ -8,7 +8,7 @@ public final class StorePersistence {
     public static let shared = StorePersistence()
 
     public var isSubscriptionActive = false
-    private var transactions: [String]?
+    private var transactions: [String]?   // lazily loaded
 
     // MARK: - Constants
     private enum Const {
@@ -22,13 +22,17 @@ public final class StorePersistence {
 
     // MARK: - Transactions (Keychain)
 
+    private func ensureTransactionsLoaded() {
+        guard transactions == nil else { return }
+        loadTransactions()
+    }
+
     private func loadTransactions() {
         guard
             let data = try? keychain.getData(Const.transactionsKey),
-            let json = try? JSONSerialization.jsonObject(with: data, options: []),
+            let json = try? JSONSerialization.jsonObject(with: data),
             let arr = json as? [String]
         else {
-            // No stored data yet; keep an empty in-memory cache without writing.
             transactions = []
             return
         }
@@ -37,7 +41,7 @@ public final class StorePersistence {
 
     public func saveTransactions() {
         guard let current = transactions else { return }
-        if let data = try? JSONSerialization.data(withJSONObject: current, options: []) {
+        if let data = try? JSONSerialization.data(withJSONObject: current) {
             try? keychain.set(data, key: Const.transactionsKey)
         }
     }
@@ -48,8 +52,8 @@ public final class StorePersistence {
     }
 
     public func saveProduct(_ productId: String) {
-        if transactions == nil { loadTransactions() }
-        // Avoid duplicates
+        guard !productId.isEmpty else { return }
+        ensureTransactionsLoaded()
         if transactions?.contains(productId) != true {
             transactions?.append(productId)
             saveTransactions()
@@ -57,7 +61,8 @@ public final class StorePersistence {
     }
 
     public func isPurchasedProduct(of identifier: String) -> Bool {
-        if transactions == nil { loadTransactions() }
+        guard !identifier.isEmpty else { return false }
+        ensureTransactionsLoaded()
         return transactions?.contains(identifier) == true
     }
 
@@ -69,7 +74,7 @@ public final class StorePersistence {
         products[product.productIdentifier] = product
     }
 
-    private func allProductsMatching(_ productIds: Set<String>) -> Set<SKProduct> {
+    private func cachedProducts(matching productIds: Set<String>) -> Set<SKProduct> {
         guard !products.isEmpty else { return [] }
         return Set(productIds.compactMap { products[$0] })
     }
@@ -88,17 +93,28 @@ public final class StorePersistence {
     ) {
         guard !productIds.isEmpty else { completion([]); return }
 
-        let cached = allProductsMatching(productIds)
-        guard cached.count != productIds.count else {
+        // Return cached immediately if all present; otherwise fetch only the missing IDs.
+        let cached = cachedProducts(matching: productIds)
+        if cached.count == productIds.count {
             completion(cached)
             return
         }
 
-        SwiftyStoreKit.retrieveProductsInfo(productIds) { [weak self] result in
-            for product in result.retrievedProducts {
-                self?.addProduct(product)
+        let missing = productIds.subtracting(cached.map(\.productIdentifier))
+        guard !missing.isEmpty else {
+            completion(cached)
+            return
+        }
+
+        SwiftyStoreKit.retrieveProductsInfo(missing) { [weak self] result in
+            guard let self else {
+                completion(cached.union(result.retrievedProducts))
+                return
             }
-            completion(result.retrievedProducts)
+            for product in result.retrievedProducts {
+                self.addProduct(product)
+            }
+            completion(cached.union(result.retrievedProducts))
         }
     }
 }

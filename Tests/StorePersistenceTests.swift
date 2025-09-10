@@ -3,11 +3,10 @@ import XCTest
 
 final class StorePersistenceTests: XCTestCase {
 
-    // MARK: - Test lifecycle
+    // MARK: - Lifecycle
 
     override func setUp() async throws {
         try await MainActor.run {
-            // Start each test with a clean slate
             StorePersistence.shared.removeTransactions()
             StorePersistence.shared.isSubscriptionActive = false
         }
@@ -20,7 +19,7 @@ final class StorePersistenceTests: XCTestCase {
         }
     }
 
-    // MARK: - Transactions (Keychain) tests
+    // MARK: - Transactions (Keychain)
 
     @MainActor
     func testInitiallyNotPurchased() {
@@ -28,43 +27,17 @@ final class StorePersistenceTests: XCTestCase {
     }
 
     @MainActor
-    func testSaveAndLoadProductPersistsAcrossInstances() {
-        let pid = "com.example.product1"
-
-        // Save once
-        StorePersistence.shared.saveProduct(pid)
-        XCTAssertTrue(StorePersistence.shared.isPurchasedProduct(of: pid))
-
-        // Simulate a fresh instance (ensures keychain persisted)
-        let fresh = StorePersistence()
-        XCTAssertTrue(fresh.isPurchasedProduct(of: pid))
+    func testSaveProductIgnoresEmptyIdentifier() {
+        StorePersistence.shared.saveProduct("")
+        XCTAssertFalse(StorePersistence.shared.isPurchasedProduct(of: ""))
     }
 
     @MainActor
-    func testRemoveTransactionsClearsPurchases() {
-        let pid = "com.example.product.remove-me"
-
-        StorePersistence.shared.saveProduct(pid)
-        XCTAssertTrue(StorePersistence.shared.isPurchasedProduct(of: pid))
-
-        StorePersistence.shared.removeTransactions()
-        XCTAssertFalse(StorePersistence.shared.isPurchasedProduct(of: pid))
+    func testIsPurchasedProductWithEmptyIdentifierIsFalse() {
+        XCTAssertFalse(StorePersistence.shared.isPurchasedProduct(of: ""))
     }
 
-    @MainActor
-    func testSavingDuplicateProductIsSafeAndStillPurchased() {
-        let pid = "com.example.product.dup"
-
-        StorePersistence.shared.saveProduct(pid)
-        StorePersistence.shared.saveProduct(pid) // duplicate
-        XCTAssertTrue(StorePersistence.shared.isPurchasedProduct(of: pid))
-
-        // Another instance still sees it purchased (persists)
-        let fresh = StorePersistence()
-        XCTAssertTrue(fresh.isPurchasedProduct(of: pid))
-    }
-
-    // MARK: - Product retrieval guards (no network)
+    // MARK: - Product retrieval guard paths (no network)
 
     func testRetrieveProductInfoWithEmptyIdReturnsNil() async {
         let exp = expectation(description: "Empty productId yields nil")

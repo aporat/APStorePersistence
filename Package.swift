@@ -5,10 +5,10 @@ import PackageDescription
 let package = Package(
     name: "APStorePersistence",
     platforms: [
-        .iOS(.v16),
-        .tvOS(.v12),
-        .watchOS("6.2"),
-        .macOS(.v10_13)
+        .macOS(.v13),
+        .iOS(.v17),
+        .tvOS(.v13),
+        .watchOS(.v6)
     ],
     products: [
         .library(
@@ -35,5 +35,5 @@ let package = Package(
             path: "Tests"
         )
     ],
-    swiftLanguageModes: [.v5, .v6]
+    swiftLanguageModes: [.v6]
 )
