@@ -8,7 +8,7 @@ public final class StorePersistence {
     public static let shared = StorePersistence()
 
     public var isSubscriptionActive = false
-    private var transactions: [String]?   // lazily loaded
+    private var transactions: [String]?
 
     // MARK: - Constants
     private enum Const {
